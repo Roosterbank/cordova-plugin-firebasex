@@ -32,9 +32,6 @@ static BOOL registeredForRemoteNotifications = NO;
 - (void)pluginInitialize {
     NSLog(@"Starting Firebase plugin");
     firebasePlugin = self;
-    
-    // Check for permission and register for remote notifications if granted
-    [self _hasPermission:^(BOOL result) {}];
 }
 
 - (void)getId:(CDVInvokedUrlCommand *)command {
@@ -130,7 +127,6 @@ static BOOL registeredForRemoteNotifications = NO;
                 BOOL enabled = NO;
                 if (settings.alertSetting == UNNotificationSettingEnabled) {
                     enabled = YES;
-                    [self registerForRemoteNotifications];
                 }
                 NSLog(@"_hasPermission: %@", enabled ? @"YES" : @"NO");
                 completeBlock(enabled);
