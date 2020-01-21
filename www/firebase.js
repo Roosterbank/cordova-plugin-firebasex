@@ -72,6 +72,10 @@ exports.hasPermission = function (success, error) {
     exec(ensureBoolean(success), error, "FirebasePlugin", "hasPermission", []);
 };
 
+exports.showNotificationSettings = function (success, error) {
+  exec(success, error, "FirebasePlugin", "showNotificationSettings", []);
+};
+
 // Notifications - Android-only
 exports.setDefaultChannel = function (options, success, error) {
     exec(success, error, "FirebasePlugin", "setDefaultChannel", [options]);

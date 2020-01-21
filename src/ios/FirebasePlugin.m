@@ -109,6 +109,13 @@ static BOOL registeredForRemoteNotifications = NO;
     return [hexString copy];
 }
 
+- (void)showNotificationSettings:(CDVInvokedUrlCommand *)command {
+    NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+    [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
+    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
 - (void)hasPermission:(CDVInvokedUrlCommand *)command {
     @try {
         [self _hasPermission:^(BOOL enabled) {
