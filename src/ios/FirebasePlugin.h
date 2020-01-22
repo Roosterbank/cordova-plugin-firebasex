@@ -11,6 +11,7 @@
 - (void)getToken:(CDVInvokedUrlCommand*)command;
 - (void)getAPNSToken:(CDVInvokedUrlCommand*)command;
 - (NSString *)hexadecimalStringFromData:(NSData *)data;
+- (void)showNotificationSettings:(CDVInvokedUrlCommand *)command;
 - (void)grantPermission:(CDVInvokedUrlCommand*)command;
 - (void)hasPermission:(CDVInvokedUrlCommand*)command;
 - (void)setBadgeNumber:(CDVInvokedUrlCommand*)command;

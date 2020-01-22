@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
@@ -130,7 +131,10 @@ public class FirebasePlugin extends CordovaPlugin {
             } else if (action.equals("hasPermission")) {
                 this.hasPermission(callbackContext);
                 return true;
-            }else if (action.equals("subscribe")) {
+            } else if (action.equals("showNotificationSettings")) {
+                this.showNotificationSettings(callbackContext);
+                return true;
+            } else if (action.equals("subscribe")) {
                 this.subscribe(callbackContext, args.getString(0));
                 return true;
             } else if (action.equals("unsubscribe")) {
@@ -157,7 +161,7 @@ public class FirebasePlugin extends CordovaPlugin {
             } else if (action.equals("logError")) {
                 this.logError(callbackContext, args);
                 return true;
-            }else if(action.equals("setCrashlyticsUserId")){
+            } else if(action.equals("setCrashlyticsUserId")){
                 this.setCrashlyticsUserId(callbackContext, args.getString(0));
                 return true;
             } else if (action.equals("setScreenName")) {
@@ -250,7 +254,7 @@ public class FirebasePlugin extends CordovaPlugin {
                 callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, true));
                 return true;
             }
-        }catch(Exception e){
+        } catch(Exception e){
             handleExceptionWithContext(e, callbackContext);
         }
         return false;
@@ -420,9 +424,38 @@ public class FirebasePlugin extends CordovaPlugin {
         cordova.getThreadPool().execute(new Runnable() {
             public void run() {
                 try {
-                    NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(cordovaActivity);
-                    boolean areNotificationsEnabled = notificationManagerCompat.areNotificationsEnabled();
-                    callbackContext.success(areNotificationsEnabled ? 1 : 0);
+                    callbackContext.success(notificationsEnabled() ? 1 : 0);
+                } catch (Exception e) {
+                    handleExceptionWithContext(e, callbackContext);
+                }
+            }
+        });
+    }
+
+    private boolean notificationsEnabled() {
+        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(cordovaActivity);
+        return notificationManagerCompat.areNotificationsEnabled();
+    }
+
+    private void showNotificationSettings(final CallbackContext callbackContext) {
+        cordova.getThreadPool().execute(new Runnable() {
+            public void run() {
+                try {
+                    Context context = cordova.getContext();
+                    Intent intent = new Intent();
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+                        intent.putExtra(Settings.EXTRA_APP_PACKAGE, context.getPackageName());
+                    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
+                        intent.putExtra("app_package", context.getPackageName());
+                        intent.putExtra("app_uid", context.getApplicationInfo().uid);
+                    } else {
+                        intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                        intent.addCategory(Intent.CATEGORY_DEFAULT);
+                        intent.setData(Uri.parse("package:" + context.getPackageName()));
+                    }
+                    context.startActivity(intent);
                 } catch (Exception e) {
                     handleExceptionWithContext(e, callbackContext);
                 }
@@ -924,7 +957,7 @@ public class FirebasePlugin extends CordovaPlugin {
                                         String errMessage;
                                         if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
                                             errMessage = "Invalid verification code";
-                                        }else{
+                                        } else{
                                             errMessage = task.getException().toString();
                                         }
                                         pluginresult = new PluginResult(PluginResult.Status.ERROR, errMessage);
@@ -956,7 +989,7 @@ public class FirebasePlugin extends CordovaPlugin {
                                         String errMessage;
                                         if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
                                             errMessage = "Invalid verification code";
-                                        }else{
+                                        } else{
                                             errMessage = task.getException().toString();
                                         }
                                         pluginresult = new PluginResult(PluginResult.Status.ERROR, errMessage);
@@ -1192,7 +1225,7 @@ public class FirebasePlugin extends CordovaPlugin {
             } else if (sound != "false"){
                 channel.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION), audioAttributes);
                 Log.d(TAG, "Channel "+id+" - sound=default");
-            }else{
+            } else{
                 Log.d(TAG, "Channel "+id+" - sound=none");
             }
 
