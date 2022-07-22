@@ -1,3 +1,6 @@
+# Version 14.2.1-cli
+* (iOS) bugfix: updates cli_build's plugin.xml to be the same as master
+
 # Version 14.2.0-cli
 * (Android) bugfix: Fix no notifications on Android 12 and above
     * Merged from PR [#747](https://github.com/dpa99c/cordova-plugin-firebasex/pull/747)
@@ -212,7 +215,7 @@
 # Version 10.1.0-cli
 * (iOS) Use precompiled pod for Firestore to reduce build times.
     * *BREAKING CHANGE:* Requires `cocoapods>=1.9` (previously `cocoapods>=1.8`).
-    * Adds hook script to check local cocoapods version during plugin install. 
+    * Adds hook script to check local cocoapods version during plugin install.
     * Based on PR [#440](https://github.com/dpa99c/cordova-plugin-firebasex/pull/440).
     * Resolves [#407](https://github.com/dpa99c/cordova-plugin-firebasex/issues/407).
 * (Android) Fixed regression bug related to default Crashlytics permission.
@@ -234,20 +237,20 @@
 * (iOS) Fix escaping already escaped json.
     * Merged from PR [#430](https://github.com/dpa99c/cordova-plugin-firebasex/pull/430).
     * Further resolves [#401](https://github.com/dpa99c/cordova-plugin-firebasex/issues/401).
-* (Android): Fix parsing of existing `colors.xml` when it contains multiple existing `<color>` to prevent overwriting the existing values. 
+* (Android): Fix parsing of existing `colors.xml` when it contains multiple existing `<color>` to prevent overwriting the existing values.
     * Resolves [#436](https://github.com/dpa99c/cordova-plugin-firebasex/issues/436).
 * (Android, iOS): Return success/failure result when subscribing/unsubscribing from topics.
     * Resolves [#422](https://github.com/dpa99c/cordova-plugin-firebasex/issues/422).
-    
+
 # Version 9.1.2-cli
 * (Android) Fix retrieval of auth provider ID - [see here for more info](https://github.com/firebase/FirebaseUI-Android/issues/329#issuecomment-564409912)
 * (iOS) Align retrieval of auth provider ID with Android.
 * (Typing): correct return type of a method
     * Merged from PR [#390](https://github.com/dpa99c/cordova-plugin-firebasex/pull/390).
 * (Documentation) Update guidance and requirements when opening issues
-* (iOS): Fix escaping of line endings in multi-line log messages being sent from native iOS implementation to JS console. 
+* (iOS): Fix escaping of line endings in multi-line log messages being sent from native iOS implementation to JS console.
     * Resolves [#401](https://github.com/dpa99c/cordova-plugin-firebasex/issues/401).
-* (iOS): Set shouldEstablishDirectChannel via a  plugin variable which defaults to false. 
+* (iOS): Set shouldEstablishDirectChannel via a  plugin variable which defaults to false.
     Resolves [#406](https://github.com/dpa99c/cordova-plugin-firebasex/issues/406).
 * Bump androidx plugin version dependencies.
     Resolves [#418](https://github.com/dpa99c/cordova-plugin-firebasex/issues/418).
@@ -258,13 +261,13 @@
     * See https://firebase.google.com/support/release-notes/ios#version_6230_-_april_21_2020.
 * (Android) Bump Firebase SDK (and other Gradle dependencies) to latest versions.
     * See https://firebase.google.com/support/release-notes/android#2020-04-23
-    
+
 # Version 9.1.0-cli
 * (Android & iOS) *BREAKING CHANGE*: Add support for filters to `fetchDocumentInFirestoreCollection()`
     * *BREAKING CHANGE* to function signature.
     * Merged from PR [#367](https://github.com/dpa99c/cordova-plugin-firebasex/pull/367).
-* (Android) Fix regression bug which causes CLI builds to fail on Android. 
-Resolves [#369](https://github.com/dpa99c/cordova-plugin-firebasex/issues/369).  
+* (Android) Fix regression bug which causes CLI builds to fail on Android.
+Resolves [#369](https://github.com/dpa99c/cordova-plugin-firebasex/issues/369).
 
 # Version 9.0.3-cli
 * (Android & iOS) Add `reloadCurrentUser()`
@@ -274,7 +277,7 @@ Resolves [#369](https://github.com/dpa99c/cordova-plugin-firebasex/issues/369).
     * Merged from PR [#363](https://github.com/dpa99c/cordova-plugin-firebasex/pull/363).
 * (Android & iOS) Add `signInUserWithCustomToken()` AND `signInUserAnonymously()` auth methods
     * Merged from PR [#359](https://github.com/dpa99c/cordova-plugin-firebasex/pull/359).
-    
+
 # Version 9.0.2-cli
 
 * (Android): Don't display app icon for large notification icon on Android. Resolves [#343](https://github.com/dpa99c/cordova-plugin-firebasex/issues/343).
