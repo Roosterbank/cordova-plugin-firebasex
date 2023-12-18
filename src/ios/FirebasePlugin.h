@@ -1,6 +1,6 @@
 #import <Cordova/CDV.h>
 #import "AppDelegate.h"
-#import "Firebase.h"
+#import "FirebaseWrapper.h"
 @import FirebaseFirestore;
 
 @interface FirebasePlugin : CDVPlugin
@@ -73,6 +73,7 @@
 - (void)setScreenName:(CDVInvokedUrlCommand*)command;
 - (void)setUserId:(CDVInvokedUrlCommand*)command;
 - (void)setUserProperty:(CDVInvokedUrlCommand*)command;
+- (void)initiateOnDeviceConversionMeasurement:(CDVInvokedUrlCommand*)command;
 
 // Crashlytics
 - (void)setCrashlyticsCollectionEnabled:(CDVInvokedUrlCommand*)command;
@@ -122,6 +123,8 @@
 - (void) getInstallationId:(CDVInvokedUrlCommand*)command;
 - (void) getInstallationToken:(CDVInvokedUrlCommand*)command;
 - (void) deleteInstallationId:(CDVInvokedUrlCommand*)command;
+
+
 
 // Internals
 + (FirebasePlugin *) firebasePlugin;
