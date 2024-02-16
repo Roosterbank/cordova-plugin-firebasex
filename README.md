@@ -14,6 +14,8 @@ I dedicate a considerable amount of my free time to developing and maintaining t
 To help ensure this plugin is kept updated, new features are added and bugfixes are implemented quickly, please donate a couple of dollars (or a little more if you can stretch) as this will help me to afford to dedicate time to its maintenance. Please consider donating if you're using this plugin in an app that makes you money, if you're being paid to make the app, if you're asking for new features or priority bug fixes.
 <!-- END DONATE -->
 
+**MAINTENANCE OF THIS PLUGIN:** Please note this plugin is maintained **only by me - one person** - in my spare time: I do not get paid for it. Therefore I will do my best to address bugs and issues as time permits but if you have an urgent requirement for a bug fix or missing feature, then I am available for paid contract work in order to expedite this - contact me for details. Otherwise I will get around to it when I have time. 
+
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -150,6 +152,7 @@ To help ensure this plugin is kept updated, new features are added and bugfixes 
     - [authenticateUserWithApple](#authenticateuserwithapple)
     - [authenticateUserWithMicrosoft](#authenticateuserwithmicrosoft)
     - [authenticateUserWithFacebook](#authenticateuserwithfacebook)
+    - [authenticateUserWithOAuth](#authenticateuserwithoauth)
     - [signInWithCredential](#signinwithcredential)
     - [linkUserWithCredential](#linkuserwithcredential)
     - [reauthenticateWithCredential](#reauthenticatewithcredential)
@@ -211,6 +214,15 @@ cordova plugin add cordova-plugin-firebasex
 ## Plugin variables
 The following Cordova plugin variables are supported by the plugin.
 Note that these must be set at plugin installation time. If you wish to change plugin variables, you'll need to uninstall the plugin and reinstall it with the new variable values.
+
+Plugin variables are initially set by specifying them during plugin installation, for example:
+`cordova plugin add cordova-plugin-firebasex --variable FIREBASE_ANALYTICS_WITHOUT_ADS=true`
+
+Once the plugin is installed, you can change the plugin variable values either by fully uninstalling/reinstalling the plugin, for example:
+`cordova plugin rm cordova-plugin-firebasex && cordova plugin add cordova-plugin-firebasex --variable FIREBASE_ANALYTICS_WITHOUT_ADS=false`
+
+Or you can manually edit the values in your project's `package.json` under `cordova.plugins.cordova-plugin-firebasex` and reinstall the plugin:
+`cordova plugin rm cordova-plugin-firebasex --nosave && cordova plugin add cordova-plugin-firebasex --nosave`
 
 ### Android & iOS
 - `FIREBASE_ANALYTICS_COLLECTION_ENABLED` - whether to automatically enable Firebase Analytics data collection on app startup. Defaults to true.
@@ -3223,11 +3235,14 @@ Authenticates the user with a Microsoft account using Sign In with Oauth to obta
 - {function} success - callback function to pass {object} credentials to as an argument. The credential object has the following properties:
     - {string} id - the identifier of a native credential object which can be used for signing in the user.
 - {function} error - callback function which will be passed a {string} error message as an argument
+- {string} locale - (Android only) the language to display Microsoft's Sign-in screen in.
+    - Defaults to "en" (English) if not specified.
+    - See [the Microsoft documentation](https://docs.microsoft.com/en-us/azure/active-directory/develop/msal-localization#supported-languages) for a list of supported locales.
+    - The value is ignored on iOS which uses the locale of the device to determine the display language.
 
 Example usage:
 
 ```javascript
-
 FirebasePlugin.authenticateUserWithMicrosoft(function(credential) {
     FirebasePlugin.signInWithCredential(credential, function() {
             console.log("Successfully signed in");
@@ -3236,7 +3251,7 @@ FirebasePlugin.authenticateUserWithMicrosoft(function(credential) {
         });
 }, function(error) {
     console.error("Failed to authenticate with Microsoft: " + error);
-});
+}, 'en_GB');
 ```
 
 ### authenticateUserWithFacebook
@@ -3271,6 +3286,39 @@ facebookConnectPlugin.login(["public_profile"],
         console.error("Failed to login to Facebook", error);
     }
 );
+```
+
+### authenticateUserWithOAuth
+Authenticates the user with an OpenID Connect (OIDC) compliant provider to obtain a credential that can be used to sign the user in/link to an existing user account/reauthenticate the user.
+- You must configure your OIDC provider in the Firebase console before using this method as outlined in the [Firebase documentation](https://firebase.google.com/docs/auth/web/openid-connect);
+- See Firebase documentation "Authenticate Using OpenID Connect" sections for [Android](https://firebase.google.com/docs/auth/android/openid-connect) and [iOS](https://firebase.google.com/docs/auth/ios/openid-connect) for more info.
+
+**Parameters**:
+- {function} success - callback function to pass {object} credentials to as an argument. The credential object has the following properties:
+    - {string} id - the identifier of a native credential object which can be used for signing in the user.
+- {function} error - callback function which will be passed a {string} error message as an argument
+
+Example usage:
+
+```javascript
+var providerId = 'oidc.provider';
+var customParameters = {
+    login_hint: 'user@domain.com'
+};
+var scopes = ['openid', 'profile', 'email'];
+
+FirebasePlugin.authenticateUserWithOAuth(function(credential) {
+    console.log("Successfully authenticated with oAuth provider");
+    FirebasePlugin.signInWithCredential(credential,
+        function() {
+            console.log("Successfully signed in");
+        }, function(error) {
+            console.error("Failed to sign in", error);
+        }
+    );
+}, function(error) {
+    console.error("Failed to authenticate with oAuth provider: " + error);
+}, providerId, customParameters, scopes);
 ```
 
 ### signInWithCredential
