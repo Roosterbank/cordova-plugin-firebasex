@@ -1,3 +1,5 @@
+# Version 16.4.1-cli
+* updated various Fieebase libs
 # Version 16.4.0-cli
 * (doc) Add note about xmlns:android attribute for config.xml
   Merged from PR [#840](https://github.com/dpa99c/cordova-plugin-firebasex/pull/840)
@@ -45,15 +47,15 @@
     * Merged from PR [#797](https://github.com/dpa99c/cordova-plugin-firebasex/pull/797)
 * (types) feat: add support for lastUpdate and created in Firestore operations
     * Merged from PR [#793](https://github.com/dpa99c/cordova-plugin-firebasex/pull/793)
-* (iOS) doc: Tutorial to make the necessary configurations to send images in notifications    
+* (iOS) doc: Tutorial to make the necessary configurations to send images in notifications
     * Merged from PR [#798](https://github.com/dpa99c/cordova-plugin-firebasex/pull/798)
 * (iOS) Fix foreground notifications not being displayed after calling grantPermission when permissions haven't been previously granted
     * Merged from PR [#800](https://github.com/dpa99c/cordova-plugin-firebasex/pull/800)
-* doc: add server side verification documentation to authenticateUserWithGoogle()    
+* doc: add server side verification documentation to authenticateUserWithGoogle()
     * Merged from PR [#805](https://github.com/dpa99c/cordova-plugin-firebasex/pull/805)
-* (iOS) build: Use precompiled FirebaseFirestore on first pod install    
+* (iOS) build: Use precompiled FirebaseFirestore on first pod install
     * Merged from PR [#752](https://github.com/dpa99c/cordova-plugin-firebasex/pull/752)
-* (iOS) feat: Add registerApplicationDidBecomeActiveListener() and registerApplicationDidEnterBackgroundListener() methods to expose native iOS app delegate methods    
+* (iOS) feat: Add registerApplicationDidBecomeActiveListener() and registerApplicationDidEnterBackgroundListener() methods to expose native iOS app delegate methods
 * (Android) build: Add support for `cordova-android@12` - use cordova-android config variable version
     * Merged from PR [#807](https://github.com/dpa99c/cordova-plugin-firebasex/pull/807)
 * (Android) update: Pin latest Firebase SDK component versions as of [01 May 2023](https://firebase.google.com/support/release-notes/android#2023-05-01)
