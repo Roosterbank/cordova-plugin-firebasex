@@ -1,3 +1,7 @@
+# Version 19.2.0
+* (ios) Update ios code to support Scene-based lifecycle events.
+    * Merged from PR [#1](https://github.com/Roosterbank/cordova-plugin-firebasex/pull/1)
+
 # Version 19.1.0
 * (ios) Update `getXcodeProjectPath` to support cordova-ios 8.x.
     * Merged from PR [#964](https://github.com/dpa99c/cordova-plugin-firebasex/pull/964)
