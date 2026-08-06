@@ -879,11 +879,10 @@
 - (void)listChannels:(CDVInvokedUrlCommand *)command;
 
 /**
- * @property isFCMEnabled
- * @abstract Indicates if Firebase Cloud Messaging is enabled for this
- * application.
+ * @method fcmEnabled
+ * @abstract Returns whether FCM is enabled.
  */
-@property(nonatomic, readonly) BOOL isFCMEnabled;
++ (BOOL)fcmEnabled;
 
 /**
  * @property notificationCallbackId
