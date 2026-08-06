@@ -206,6 +206,15 @@ static __weak id<UNUserNotificationCenterDelegate>
     }];
 
     self.applicationInBackground = @(YES);
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                                     selector:@selector(firebasexApplicationDidBecomeActive:)
+                                                         name:UIApplicationDidBecomeActiveNotification
+                                                       object:nil];
+            [[NSNotificationCenter defaultCenter] addObserver:self
+                                                     selector:@selector(firebasexApplicationDidEnterBackground:)
+                                                         name:UIApplicationDidEnterBackgroundNotification
+                                                       object:nil];
 
   } @catch (NSException *exception) {
     [FirebasePlugin.firebasePlugin
@@ -216,13 +225,13 @@ static __weak id<UNUserNotificationCenterDelegate>
 }
 
 - (BOOL)isFCMEnabled {
-  return FirebasePlugin.firebasePlugin.isFCMEnabled;
+  return FirebasePlugin.fcmEnabled;
 }
 
 /**
  * Called when the app becomes active again.
  */
-- (void)applicationDidBecomeActive:(UIApplication *)application {
+- (void)firebasexApplicationDidBecomeActive:(NSNotification *)notification {
   self.applicationInBackground = @(NO);
   @try {
     [FirebasePlugin.firebasePlugin _logMessage:@"Enter foreground"];
@@ -239,7 +248,7 @@ static __weak id<UNUserNotificationCenterDelegate>
 /**
  * Called when the app enters the background.
  */
-- (void)applicationDidEnterBackground:(UIApplication *)application {
+- (void)firebasexApplicationDidEnterBackground:(NSNotification *)notification {
   self.applicationInBackground = @(YES);
   @try {
     [FirebasePlugin.firebasePlugin _logMessage:@"Enter background"];
@@ -561,7 +570,7 @@ static __weak id<UNUserNotificationCenterDelegate>
 
     bool isContentAvailable = [self isContentAvailable:mutableUserInfo];
 
-    if (showForegroundNotification && isContentAvailable) {
+    if (showForegroundNotification) {
       [FirebasePlugin.firebasePlugin
           _logMessage:
               [NSString

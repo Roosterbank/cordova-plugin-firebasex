@@ -65,6 +65,8 @@ static NSMutableDictionary *traces;
 static FIRMultiFactorResolver *multiFactorResolver;
 static FIROAuthProvider *oauthProvider;
 static NSMutableArray *pendingGlobalJS = nil;
+static BOOL fcmEnabled;
+static BOOL fcmChecked;
 
 /**
  * Returns the current singleton instance of the FirebasePlugin.
@@ -88,6 +90,31 @@ static NSMutableArray *pendingGlobalJS = nil;
   firestore = firestoreInstance;
 }
 
++ (void)readGooglePlist {
+  if (googlePlist == nil) {
+    googlePlist = [NSMutableDictionary
+                   dictionaryWithContentsOfFile:[[NSBundle mainBundle]
+                                                 pathForResource:@"GoogleService-Info"
+                                                 ofType:@"plist"]];
+  }
+}
+
++ (BOOL) fcmEnabled {
+  if (!fcmChecked) {
+    // We don't need `setPreferenceFlag` here as we don't allow to change this
+    // at runtime.
+    fcmEnabled =
+    [FirebasePlugin getGooglePlistFlagWithDefaultValue:FIREBASEX_IOS_FCM_ENABLED
+                                          defaultValue:YES];
+    fcmChecked = YES;
+    if (!fcmEnabled) {
+      NSLog(@"Firebase Cloud Messaging is disabled, see IOS_FCM_ENABLED variable of the plugin");
+    }
+  }
+
+  return fcmEnabled;
+}
+
 - (void)applicationLaunchedWithUrl:(NSNotification *)notification {
   NSURL *url = [notification object];
   [[GIDSignIn sharedInstance] handleURL:url];
@@ -104,10 +131,6 @@ static NSMutableArray *pendingGlobalJS = nil;
 
   @try {
     preferences = [NSUserDefaults standardUserDefaults];
-    googlePlist = [NSMutableDictionary
-        dictionaryWithContentsOfFile:[[NSBundle mainBundle]
-                                         pathForResource:@"GoogleService-Info"
-                                                  ofType:@"plist"]];
     immediateMessagePayloadDelivery = [[[NSBundle mainBundle]
         objectForInfoDictionaryKey:
             @"FIREBASE_MESSAGING_IMMEDIATE_PAYLOAD_DELIVERY"] boolValue];
@@ -118,53 +141,53 @@ static NSMutableArray *pendingGlobalJS = nil;
                name:CDVPluginHandleOpenURLNotification
              object:nil];
 
-    if ([self getGooglePlistFlagWithDefaultValue:
+    if ([FirebasePlugin getGooglePlistFlagWithDefaultValue:
                   FIREBASE_ANALYTICS_COLLECTION_ENABLED
                                     defaultValue:YES]) {
       [self setPreferenceFlag:FIREBASE_ANALYTICS_COLLECTION_ENABLED flag:YES];
     }
 
-    if ([self getGooglePlistFlagWithDefaultValue:
+    if ([FirebasePlugin getGooglePlistFlagWithDefaultValue:
                   FIREBASE_PERFORMANCE_COLLECTION_ENABLED
                                     defaultValue:YES]) {
       [self setPreferenceFlag:FIREBASE_PERFORMANCE_COLLECTION_ENABLED flag:YES];
     }
 
-    if ([self getGooglePlistFlagWithDefaultValue:
+    if ([FirebasePlugin getGooglePlistFlagWithDefaultValue:
                   FirebaseCrashlyticsCollectionEnabled
                                     defaultValue:YES]) {
       [self setPreferenceFlag:FIREBASE_CRASHLYTICS_COLLECTION_ENABLED flag:YES];
     }
 
-    if ([self getGooglePlistFlagWithDefaultValue:
+    if ([FirebasePlugin getGooglePlistFlagWithDefaultValue:
                   GOOGLE_ANALYTICS_ADID_COLLECTION_ENABLED
                                     defaultValue:YES]) {
       [self setPreferenceFlag:GOOGLE_ANALYTICS_ADID_COLLECTION_ENABLED
                          flag:YES];
     }
 
-    if ([self getGooglePlistFlagWithDefaultValue:
+    if ([FirebasePlugin getGooglePlistFlagWithDefaultValue:
                   GOOGLE_ANALYTICS_DEFAULT_ALLOW_ANALYTICS_STORAGE
                                     defaultValue:YES]) {
       [self setPreferenceFlag:GOOGLE_ANALYTICS_DEFAULT_ALLOW_ANALYTICS_STORAGE
                          flag:YES];
     }
 
-    if ([self getGooglePlistFlagWithDefaultValue:
+    if ([FirebasePlugin getGooglePlistFlagWithDefaultValue:
                   GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_STORAGE
                                     defaultValue:YES]) {
       [self setPreferenceFlag:GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_STORAGE
                          flag:YES];
     }
 
-    if ([self getGooglePlistFlagWithDefaultValue:
+    if ([FirebasePlugin getGooglePlistFlagWithDefaultValue:
                   GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_USER_DATA
                                     defaultValue:YES]) {
       [self setPreferenceFlag:GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_USER_DATA
                          flag:YES];
     }
 
-    if ([self getGooglePlistFlagWithDefaultValue:
+    if ([FirebasePlugin getGooglePlistFlagWithDefaultValue:
                   GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_PERSONALIZATION_SIGNALS
                                     defaultValue:YES]) {
       [self setPreferenceFlag:
@@ -172,21 +195,12 @@ static NSMutableArray *pendingGlobalJS = nil;
                          flag:YES];
     }
 
-    // We don't need `setPreferenceFlag` here as we don't allow to change this
-    // at runtime.
-    _isFCMEnabled =
-        [self getGooglePlistFlagWithDefaultValue:FIREBASEX_IOS_FCM_ENABLED
-                                    defaultValue:YES];
-    if (!self.isFCMEnabled) {
-      [self _logInfo:@"Firebase Cloud Messaging is disabled, see "
-                     @"IOS_FCM_ENABLED variable of the plugin"];
-    }
 
     // Set actionable categories if pn-actions.json exist in bundle
     [self setActionableNotifications];
 
     // Check for permission and register for remote notifications if granted
-    if (self.isFCMEnabled) {
+    if (FirebasePlugin.fcmEnabled) {
       [self _hasPermission:^(BOOL result){
       }];
     }
@@ -223,7 +237,7 @@ static NSMutableArray *pendingGlobalJS = nil;
 
     // The part related to installation ID is not specific to FCM, that's why it
     // was moved above.
-    if (!self.isFCMEnabled) {
+    if (!FirebasePlugin.fcmEnabled) {
       return;
     }
 
@@ -4896,8 +4910,9 @@ static NSMutableArray *pendingGlobalJS = nil;
  * @param defaultValue The value to return if the key is missing.
  * @return The boolean value from plist or default.
  */
-- (BOOL)getGooglePlistFlagWithDefaultValue:(NSString *)name
++ (BOOL)getGooglePlistFlagWithDefaultValue:(NSString *)name
                               defaultValue:(BOOL)defaultValue {
+  [FirebasePlugin readGooglePlist];
   if ([googlePlist objectForKey:name] == nil) {
     return defaultValue;
   }
